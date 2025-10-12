@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Servicios de DiagnosLab: extracción a domicilio, análisis clínicos generales, perfiles especializados, control preventivo y más." />
+  <meta name="keywords"
+    content="servicios laboratorio, extracción a domicilio, perfiles hormonales, análisis clínicos, DiagnosLab" />
+  <meta name="author" content="DiagnosLab" />
+  <title>Servicios - DiagnosLab</title>
+  <link rel="stylesheet" href="../style/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js" defer></script>
+  <script src="../js/main.js" defer></script>
+</head>
+
+<body>
+  <div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+          <img src="../acces/logo.png" alt="DiagnosLab" height="36" />
+          <span class="fw-semibold">DiagnosLab</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarDiag"
+          aria-controls="navbarDiag" aria-expanded="false" aria-label="Mostrar menú">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarDiag">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">Inicio</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./productos.html">Productos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="./servicios.html">Servicios</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./nosotros.html">Nosotros</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./contacto.html">Contacto</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./registro.html">Registro</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./carrito.html">🛒</a>
+            </li>
+            <span id="liveClock" class="nav-link small text-white-50 d-none d-lg-inline">--:--:--</span>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <header class="text-white text-center py-5" style="
+          background: linear-gradient(270deg, #4dabf7, #0d6efd, #004085);
+          background-size: 600% 600%;
+          animation: heroGradient 15s ease infinite;
+        ">
+      <div class="container">
+        <h1 class="display-6 fw-bold mb-2">Nuestros servicios</h1>
+        <p class="mb-0">
+          Soluciones confiables para chequeos de rutina y estudios
+          especializados
+        </p>
+      </div>
+    </header>
+    <main class="py-5 servicios-main">
+      <div class="container">
+        <section class="mb-5">
+          <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+              <article class="serv-card p-4 h-100 border rounded shadow-sm fade-in" data-price="10000">
+                <div class="serv-ico mb-2">
+                  <i class="bi bi-house-heart fs-2"></i>
+                </div>
+                <h3 class="h5">Extracción a domicilio</h3>
+                <p>
+                  Coordinamos tu extracción en casa o trabajo con protocolos
+                  de bioseguridad y cadena de custodia.
+                </p>
+                <ul class="mb-3 small">
+                  <li>Turnos por WhatsApp o formulario</li>
+                  <li>Área de cobertura en la ciudad</li>
+                  <li>Resultados online</li>
+                </ul>
+                <a href="contacto.html" class="btn btn-outline-primary btn-sm">Solicitar turno</a>
+              </article>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <article class="serv-card p-4 h-100 border rounded shadow-sm fade-in delay-1" data-price="50000">
+                <div class="serv-ico mb-2">
+                  <i class="bi bi-clipboard2-pulse fs-2"></i>
+                </div>
+                <h3 class="h5">Análisis clínicos generales</h3>
+                <p>
+                  Estudios de rutina con entrega clara y en tiempos
+                  comprometidos.
+                </p>
+                <ul class="mb-3 small">
+                  <li>Hemograma, orina completa</li>
+                  <li>Glucemia, urea, creatinina</li>
+                  <li>Perfil lipídico y hepático</li>
+                </ul>
+                <a href="productos.html" class="btn btn-outline-primary btn-sm">Ver catálogo</a>
+              </article>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <article class="serv-card p-4 h-100 border rounded shadow-sm fade-in delay-2" data-price="35000">
+                <div class="serv-ico mb-2">
+                  <i class="bi bi-bezier2 fs-2"></i>
+                </div>
+                <h3 class="h5">Perfiles especializados</h3>
+                <p>
+                  Paquetes orientados a diagnóstico y seguimiento de
+                  patologías específicas.
+                </p>
+                <ul class="mb-3 small">
+                  <li>Hormonal: tiroides, fertilidad</li>
+                  <li>Metabólico: diabetes, renal</li>
+                  <li>Cardiovascular y autoinmunidad</li>
+                </ul>
+                <a href="productos.html#especializados" class="btn btn-outline-primary btn-sm">Ver perfiles</a>
+              </article>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <article class="serv-card p-4 h-100 border rounded shadow-sm fade-in" data-price="50000">
+                <div class="serv-ico mb-2">
+                  <i class="bi bi-gear-wide-connected fs-2"></i>
+                </div>
+                <h3 class="h5">Aparatología & control de calidad</h3>
+                <p>
+                  Equipos calibrados, mantenimientos programados y controles
+                  internos/externos frecuentes.
+                </p>
+                <ul class="mb-3 small">
+                  <li>Calibración documentada</li>
+                  <li>Backups de reporte</li>
+                  <li>Trazabilidad de reactivos</li>
+                </ul>
+                <a href="nosotros.html" class="btn btn-outline-primary btn-sm">Conocer más</a>
+              </article>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <article class="serv-card p-4 h-100 border rounded shadow-sm fade-in delay-1" data-price="3500">
+                <div class="serv-ico mb-2">
+                  <i class="bi bi-pc-display-horizontal fs-2"></i>
+                </div>
+                <h3 class="h5">Resultados online</h3>
+                <p>
+                  Accedé a tus resultados de forma segura desde cualquier
+                  dispositivo.
+                </p>
+                <ul class="mb-3 small">
+                  <li>Entrega por email o portal</li>
+                  <li>Historial de estudios</li>
+                  <li>Formato PDF imprimible</li>
+                </ul>
+                <a href="contacto.html" class="btn btn-outline-primary btn-sm">Solicitar acceso</a>
+              </article>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <article class="serv-card p-4 h-100 border rounded shadow-sm fade-in delay-2" data-price="3500">
+                <div class="serv-ico mb-2">
+                  <i class="bi bi-shield-check fs-2"></i>
+                </div>
+                <h3 class="h5">Asesoramiento pre-analítico</h3>
+                <p>
+                  Indicaciones previas a la toma de muestra para asegurar
+                  resultados confiables.
+                </p>
+                <ul class="mb-3 small">
+                  <li>Ayuno, medicaciones, horarios</li>
+                  <li>Transporte de muestras</li>
+                  <li>Requisitos por estudio</li>
+                </ul>
+                <a href="contacto.html" class="btn btn-outline-primary btn-sm">Consultar</a>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="text-center py-5 text-white rounded" style="
+              background: linear-gradient(270deg, #4dabf7, #0d6efd, #004085);
+              background-size: 600% 600%;
+              animation: heroGradient 15s ease infinite;
+            ">
+          <h2 class="h4 mb-2">¿Listo para solicitar un estudio?</h2>
+          <p class="mb-4">
+            Coordiná tu turno o elegí estudios desde el catálogo.
+          </p>
+          <a class="btn btn-light btn-lg me-2" href="contacto.html"><i class="bi bi-calendar-check me-1"></i> Pedir
+            turno</a>
+          <a class="btn btn-outline-light btn-lg" href="productos.html"><i class="bi bi-bag me-1"></i> Ver productos</a>
+        </section>
+
+        <section class="mt-5">
+          <h2 class="h4 text-center mb-4">Preguntas frecuentes</h2>
+          <div class="accordion" id="faqServ">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="q1">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#a1"
+                  aria-expanded="true" aria-controls="a1">
+                  ¿Necesito ayuno para todos los estudios?
+                </button>
+              </h2>
+              <div id="a1" class="accordion-collapse collapse show" aria-labelledby="q1" data-bs-parent="#faqServ">
+                <div class="accordion-body">
+                  No. El ayuno suele ser necesario para glucemia, perfil
+                  lipídico y otros. Al solicitar el turno te indicamos
+                  requisitos específicos para cada estudio.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="q2">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a2"
+                  aria-expanded="false" aria-controls="a2">
+                  ¿Cómo recibo mis resultados?
+                </button>
+              </h2>
+              <div id="a2" class="accordion-collapse collapse" aria-labelledby="q2" data-bs-parent="#faqServ">
+                <div class="accordion-body">
+                  Podés recibirlos por email y acceder al portal con tu
+                  usuario. También podés retirarlos impresos en el laboratorio
+                  si lo preferís.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="q3">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a3"
+                  aria-expanded="false" aria-controls="a3">
+                  ¿Hacen extracciones a domicilio?
+                </button>
+              </h2>
+              <div id="a3" class="accordion-collapse collapse" aria-labelledby="q3" data-bs-parent="#faqServ">
+                <div class="accordion-body">
+                  Sí. Coordinamos día y franja horaria según tu zona. Consultá
+                  cobertura y costo adicional al solicitar tu turno.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <section class="py-5">
+        <div class="container">
+          <h2 class="h4 mb-3">Turnos online</h2>
+          <div id="turnosApp" class="card p-3">
+            <div class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label">Servicio</label>
+                <select class="form-select" v-model="servicio">
+                  <option disabled value="">Elegí uno…</option>
+                  <option v-for="s in servicios" :key="s.id" :value="s">{{ s.nombre }} — {{ fmt(s.precio) }}</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Fecha</label>
+                <input type="date" class="form-control" v-model="fecha">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Hora</label>
+                <input type="time" class="form-control" v-model="hora">
+              </div>
+            </div>
+            <div class="mt-3 d-flex justify-content-between align-items-center">
+              <div class="small text-muted">Total estimado: <strong>{{ fmt(total) }}</strong></div>
+              <button class="btn btn-primary" :disabled="!canEnviar || enviando" @click="reservar">
+                <span v-if="!enviando">Reservar turno</span>
+                <span v-else>Reservando…</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer-diag text-white text-center py-4"
+      style="background: linear-gradient(270deg, #4dabf7, #0d6efd)">
+      <div class="container">
+        <p class="mb-0">
+          © 2025 DiagnosLab - Todos los derechos reservados. by Fer Ropelato
+        </p>
+        <div class="mt-2">
+          <a href="https:www.facebook.com" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+          <a href="https:www.instagram.com" class="text-white me-3"><i class="bi bi-instagram"></i></a>
+          <a href="https:www.whatsapp.com" class="text-white"><i class="bi bi-whatsapp"></i></a>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    @keyframes heroGradient {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!window.Vue || !document.getElementById('turnosApp')) return;
+      const { createApp, reactive, computed } = Vue;
+      createApp({
+        setup() {
+          const state = reactive({
+            servicios: [
+              { id: 'extr', nombre: 'Extracción a domicilio', precio: 6500 },
+              { id: 'gen', nombre: 'Perfil general', precio: 12000 },
+              { id: 'horm', nombre: 'Perfil hormonal', precio: 23000 },
+            ],
+            servicio: '',
+            fecha: '',
+            hora: '',
+            enviando: false,
+          });
+          const fmt = (n) => (window.ARS || new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 })).format(n || 0);
+          const total = computed(() => state.servicio ? state.servicio.precio : 0);
+          const canEnviar = computed(() => !!(state.servicio && state.fecha && state.hora));
+          async function reservar() {
+            if (!canEnviar.value) return;
+            state.enviando = true;
+            try {
+              await simulateNetwork(1000, 0.1);
+              toast('Turno reservado ✅');
+              await $swal({ icon: 'success', title: '¡Turno reservado!', text: `${state.servicio.nombre} el ${state.fecha} a las ${state.hora}` });
+            } catch (e) {
+              await $swal({ icon: 'error', title: 'No se pudo reservar', text: e.message || 'Probá nuevamente.' });
+            } finally {
+              state.enviando = false;
+            }
+          }
+          return { ...state, fmt, total, canEnviar, reservar };
+        }
+      }).mount('#turnosApp');
+    });
+  </script>
+</body>
+
+</html>
