@@ -1,5 +1,18 @@
 {
+  "name": "diagnoslab",
+  "version": "1.0.0",
+  "description": "DiagnosLab - Sitio web para análisis clínicos",
+  "main": "index.html",
+  "scripts": {
+    "build": "node build-config.js",
+    "dev": "python -m http.server 8000",
+    "sass": "sass sass/main.scss css/main.css --watch",
+    "optimize": "npm run build && npm run sass"
+  },
   "devDependencies": {
     "sass": "^1.93.2"
-  }
+  },
+  "keywords": ["laboratorio", "análisis", "clínicos", "diagnóstico"],
+  "author": "Fer Ropelato",
+  "license": "MIT"
 }

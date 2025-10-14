@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Mis Pedidos - DiagnosLab - Historial de pedidos y seguimiento" />
+  <meta name="author" content="DiagnosLab" />
+  <title>Mis Pedidos - DiagnosLab</title>
+
+  <link rel="stylesheet" href="../css/optimized.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js" defer></script>
+  <script src="../js/utils.js" defer></script>
+  <script src="../js/auth-manager.js" defer></script>
+  <script src="../js/cart-manager.js" defer></script>
+  <script src="../js/main.js" defer></script>
+</head>
+
+<body>
+  <div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+          <img src="../acces/logo.png" alt="DiagnosLab" height="36" />
+          <span class="fw-semibold">DiagnosLab</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarDiag"
+          aria-controls="navbarDiag" aria-expanded="false" aria-label="Mostrar menú">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarDiag">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">Inicio</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./productos.html">Productos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./servicios.html">Servicios</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./nosotros.html">Nosotros</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./contacto.html">Contacto</a>
+            </li>
+            <li class="nav-item" id="loginLink" style="display: none;">
+              <a class="nav-link" href="./login.html">Iniciar Sesión</a>
+            </li>
+            <li class="nav-item" id="registerLink" style="display: none;">
+              <a class="nav-link" href="./registro.html">Registro</a>
+            </li>
+            <li class="nav-item" id="userMenu">
+              <div id="userInfo"></div>
+            </li>
+            <li class="nav-item position-relative">
+              <a class="nav-link" href="./carrito.html">🛒
+                <span id="cartCount" class="badge bg-danger position-absolute translate-middle p-1"
+                  style="top: 0; right: 0; font-size: 0.7rem; display: none">0</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="text-white text-center py-5" style="
+          background: linear-gradient(270deg, #4dabf7, #0d6efd, #004085);
+          background-size: 600% 600%;
+          animation: heroGradient 15s ease infinite;
+        ">
+      <div class="container">
+        <h1 class="display-6 fw-bold mb-2">Mis Pedidos</h1>
+        <p class="mb-0">Historial de pedidos y seguimiento de entregas</p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="py-5">
+      <div class="container">
+        <!-- Filtros -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input type="search" class="form-control" id="searchOrders" placeholder="Buscar pedido...">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="d-flex gap-2 justify-content-md-end">
+              <select class="form-select" id="statusFilter" style="max-width: 200px;">
+                <option value="">Todos los estados</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="procesando">Procesando</option>
+                <option value="enviado">Enviado</option>
+                <option value="entregado">Entregado</option>
+                <option value="cancelado">Cancelado</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de Pedidos -->
+        <div class="row">
+          <div class="col-12">
+            <div id="ordersContainer">
+              <!-- Los pedidos se cargarán aquí dinámicamente -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón para crear pedido de prueba -->
+        <div class="row mt-4">
+          <div class="col-12 text-center">
+            <button class="btn btn-outline-primary" id="createTestOrder">
+              <i class="bi bi-plus-circle me-2"></i>Crear Pedido de Prueba
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-diag text-white text-center py-4"
+      style="background: linear-gradient(270deg, #4dabf7, #0d6efd)">
+      <div class="container">
+        <p class="mb-0">
+          © 2025 DiagnosLab - Todos los derechos reservados. by Fer Ropelato
+        </p>
+        <div class="mt-2">
+          <a href="https://www.facebook.com" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+          <a href="https://www.instagram.com" class="text-white me-3"><i class="bi bi-instagram"></i></a>
+          <a href="https://www.whatsapp.com" class="text-white"><i class="bi bi-whatsapp"></i></a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    class OrderManager {
+      constructor() {
+        this.orders = [];
+        this.loadOrders();
+        this.setupEventListeners();
+        this.renderOrders();
+      }
+
+      loadOrders() {
+        if (!window.authManager.isLoggedIn()) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        const user = window.authManager.getCurrentUser();
+        this.orders = window.StorageUtils.get(`dlab_orders_${user.email}`, []);
+      }
+
+      saveOrders() {
+        if (!window.authManager.isLoggedIn()) return;
+        
+        const user = window.authManager.getCurrentUser();
+        window.StorageUtils.set(`dlab_orders_${user.email}`, this.orders);
+      }
+
+      createOrder(cartItems) {
+        const order = {
+          id: Date.now().toString(),
+          date: new Date().toISOString(),
+          status: 'pendiente',
+          items: cartItems.map(item => ({
+            id: item.id,
+            title: item.title,
+            price: item.price,
+            qty: item.qty,
+            img: item.img
+          })),
+          total: cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0),
+          shippingAddress: window.authManager.getCurrentUser().direccion || 'Dirección no especificada',
+          notes: 'Pedido creado automáticamente'
+        };
+
+        this.orders.unshift(order);
+        this.saveOrders();
+        this.renderOrders();
+        
+        return order;
+      }
+
+      updateOrderStatus(orderId, newStatus) {
+        const order = this.orders.find(o => o.id === orderId);
+        if (order) {
+          order.status = newStatus;
+          order.lastUpdate = new Date().toISOString();
+          this.saveOrders();
+          this.renderOrders();
+          return true;
+        }
+        return false;
+      }
+
+      getStatusBadgeClass(status) {
+        const classes = {
+          'pendiente': 'bg-warning',
+          'procesando': 'bg-info',
+          'enviado': 'bg-primary',
+          'entregado': 'bg-success',
+          'cancelado': 'bg-danger'
+        };
+        return classes[status] || 'bg-secondary';
+      }
+
+      getStatusText(status) {
+        const texts = {
+          'pendiente': 'Pendiente',
+          'procesando': 'Procesando',
+          'enviado': 'Enviado',
+          'entregado': 'Entregado',
+          'cancelado': 'Cancelado'
+        };
+        return texts[status] || status;
+      }
+
+      renderOrders() {
+        const container = document.getElementById('ordersContainer');
+        
+        if (this.orders.length === 0) {
+          container.innerHTML = `
+            <div class="card">
+              <div class="card-body text-center py-5">
+                <i class="bi bi-bag text-muted" style="font-size: 4rem;"></i>
+                <h5 class="mt-3 text-muted">No tienes pedidos aún</h5>
+                <p class="text-muted">Cuando realices tu primer pedido, aparecerá aquí</p>
+                <a href="./productos.html" class="btn btn-primary">
+                  <i class="bi bi-cart-plus me-2"></i>Ver Productos
+                </a>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        const filteredOrders = this.getFilteredOrders();
+        
+        container.innerHTML = filteredOrders.map(order => `
+          <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-0">Pedido #${order.id}</h6>
+                <small class="text-muted">${new Date(order.date).toLocaleDateString('es-AR')}</small>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge ${this.getStatusBadgeClass(order.status)}">
+                  ${this.getStatusText(order.status)}
+                </span>
+                <span class="fw-bold">${window.ARS.format(order.total)}</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-8">
+                  <h6>Productos:</h6>
+                  <div class="row">
+                    ${order.items.map(item => `
+                      <div class="col-md-6 mb-2">
+                        <div class="d-flex align-items-center">
+                          <img src="${item.img || '../acces/placeholder.png'}" 
+                               alt="${item.title}" 
+                               style="width: 40px; height: 40px; object-fit: contain; margin-right: 10px;">
+                          <div>
+                            <div class="fw-semibold">${item.title}</div>
+                            <small class="text-muted">${item.qty} × ${window.ARS.format(item.price)}</small>
+                          </div>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <h6>Información del Pedido:</h6>
+                  <p class="mb-1"><strong>Dirección:</strong> ${order.shippingAddress}</p>
+                  <p class="mb-1"><strong>Notas:</strong> ${order.notes}</p>
+                  ${order.lastUpdate ? `<p class="mb-0"><strong>Última actualización:</strong> ${new Date(order.lastUpdate).toLocaleDateString('es-AR')}</p>` : ''}
+                </div>
+              </div>
+              <div class="mt-3 d-flex gap-2">
+                <button class="btn btn-sm btn-outline-primary" onclick="orderManager.viewOrderDetails('${order.id}')">
+                  <i class="bi bi-eye me-1"></i>Ver Detalles
+                </button>
+                ${order.status === 'pendiente' ? `
+                  <button class="btn btn-sm btn-outline-danger" onclick="orderManager.cancelOrder('${order.id}')">
+                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                  </button>
+                ` : ''}
+                ${order.status === 'entregado' ? `
+                  <button class="btn btn-sm btn-outline-success" onclick="orderManager.reorder('${order.id}')">
+                    <i class="bi bi-arrow-repeat me-1"></i>Volver a Pedir
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      getFilteredOrders() {
+        const searchTerm = document.getElementById('searchOrders').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+
+        return this.orders.filter(order => {
+          const matchesSearch = !searchTerm || 
+            order.id.includes(searchTerm) ||
+            order.items.some(item => item.title.toLowerCase().includes(searchTerm));
+          
+          const matchesStatus = !statusFilter || order.status === statusFilter;
+          
+          return matchesSearch && matchesStatus;
+        });
+      }
+
+      setupEventListeners() {
+        document.getElementById('searchOrders').addEventListener('input', () => {
+          this.renderOrders();
+        });
+
+        document.getElementById('statusFilter').addEventListener('change', () => {
+          this.renderOrders();
+        });
+
+        document.getElementById('createTestOrder').addEventListener('click', () => {
+          this.createTestOrder();
+        });
+      }
+
+      createTestOrder() {
+        const testItems = [
+          {
+            id: 'test-1',
+            title: 'Tubo sin aditivo (Tapa roja)',
+            price: 1000,
+            qty: 10,
+            img: '../acces/sin aditivo.png'
+          },
+          {
+            id: 'test-2',
+            title: 'Tubo EDTA K2/K3 (Tapa lila)',
+            price: 1000,
+            qty: 5,
+            img: '../acces/edta.png'
+          }
+        ];
+
+        const order = this.createOrder(testItems);
+        window.UIUtils.showToast('Pedido de prueba creado exitosamente', 'success');
+      }
+
+      viewOrderDetails(orderId) {
+        const order = this.orders.find(o => o.id === orderId);
+        if (order) {
+          // Aquí podrías abrir un modal con más detalles
+          window.UIUtils.showAlert({
+            title: `Pedido #${order.id}`,
+            html: `
+              <p><strong>Fecha:</strong> ${new Date(order.date).toLocaleString('es-AR')}</p>
+              <p><strong>Estado:</strong> ${this.getStatusText(order.status)}</p>
+              <p><strong>Total:</strong> ${window.ARS.format(order.total)}</p>
+              <p><strong>Dirección:</strong> ${order.shippingAddress}</p>
+              <p><strong>Notas:</strong> ${order.notes}</p>
+            `
+          });
+        }
+      }
+
+      cancelOrder(orderId) {
+        if (confirm('¿Estás seguro de que quieres cancelar este pedido?')) {
+          if (this.updateOrderStatus(orderId, 'cancelado')) {
+            window.UIUtils.showToast('Pedido cancelado', 'info');
+          }
+        }
+      }
+
+      reorder(orderId) {
+        const order = this.orders.find(o => o.id === orderId);
+        if (order) {
+          // Agregar items al carrito
+          order.items.forEach(item => {
+            window.cartManager.addItem(item, item.qty);
+          });
+          window.UIUtils.showToast('Productos agregados al carrito', 'success');
+        }
+      }
+    }
+
+    // Inicializar el gestor de pedidos
+    let orderManager;
+    document.addEventListener('DOMContentLoaded', function() {
+      orderManager = new OrderManager();
+    });
+  </script>
+</body>
+</html>

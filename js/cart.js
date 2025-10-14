@@ -1,20 +1,13 @@
 (function cartOffcanvas() {
-  const $ = (s, c = document) => c.querySelector(s);
-  const $$ = (s, c = document) => [...c.querySelectorAll(s)];
-  const LSK_CART = 'dlab_cart';
-
+  // Usar utilidades comunes
   function getCart() {
-    try {
-      if (Array.isArray(window.cart)) return window.cart;
-      return JSON.parse(localStorage.getItem(LSK_CART) || '[]') || [];
-    } catch {
-      return [];
-    }
+    return window.cartManager ? window.cartManager.cart : [];
   }
   function setCart(next) {
-    window.cart = Array.isArray(next) ? next : [];
-    localStorage.setItem(LSK_CART, JSON.stringify(window.cart));
-    if (typeof window.renderCartBadge === 'function') window.renderCartBadge();
+    if (window.cartManager) {
+      window.cartManager.cart = Array.isArray(next) ? next : [];
+      window.cartManager.saveCart();
+    }
   }
 
   const listEl = $('#cartItems');
@@ -25,7 +18,7 @@
 
   if (!listEl || !totalItemsEl) return;
 
-  const fmtARS = window.ARS || new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+  const fmtARS = window.ARS;
 
   function totals(c) {
     const items = c.reduce((a, p) => a + (p.qty || 0), 0);
@@ -74,41 +67,15 @@
 
   window.renderCartUI = renderCartUI;
 
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-remove]');
-    if (!btn) return;
-    const id = String(btn.getAttribute('data-remove'));
-    const c = getCart().filter(p => String(p.id) !== id);
-    setCart(c);
-    renderCartUI();
-    alert('🗑️ Producto eliminado del carrito.');
-  });
+  // Los event listeners ahora están en cart-manager.js
 
-  if (clearBtn) clearBtn.addEventListener('click', () => {
-    const c = getCart();
-    if (!c.length) return alert('El carrito está vacío.');
-    const ok = confirm('¿Vaciar carrito por completo?');
-    if (!ok) return;
-    setCart([]);
-    renderCartUI();
-    alert('🧹 Carrito vaciado.');
-  });
-
-  if (chkBtn) chkBtn.addEventListener('click', () => {
-    const c = getCart();
-    if (!c.length) return alert('El carrito está vacío.');
-    const ok = confirm('¿Deseás finalizar la compra? Te contactaremos para coordinar.');
-    if (!ok) return;
-    setCart([]);
-    renderCartUI();
-    alert('✅ ¡Gracias! Te contactaremos por email/WhatsApp.');
-  });
+  // Los event listeners ahora están en cart-manager.js
 
   const off = document.getElementById('offcanvasCart');
   if (off) off.addEventListener('shown.bs.offcanvas', renderCartUI);
 
   window.addEventListener('storage', (e) => {
-    if (e.key === LSK_CART) renderCartUI();
+    if (e.key === window.SITE_CONFIG.storageKeys.cart) renderCartUI();
   });
 
   renderCartUI();

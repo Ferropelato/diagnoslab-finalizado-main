@@ -1,5 +1,5 @@
 (function formsModule() {
-  const $ = (s, c=document)=>c.querySelector(s);
+  // Usar utilidades comunes
 
   const contactForm = $('#contactForm');
   if (contactForm) {
@@ -10,10 +10,8 @@
 
     contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      if (!contactForm.checkValidity()) {
-        contactForm.classList.add('was-validated');
-        return;
-      }
+      if (!window.FormUtils.validateForm(contactForm)) return;
+      
       const payload = {
         nombre: nameEl.value.trim(),
         email: emailEl.value.trim(),
@@ -21,18 +19,17 @@
         mensaje: msgEl.value.trim(),
         fecha: new Date().toISOString()
       };
-      const KEY = 'dlab_messages';
-      const list = JSON.parse(localStorage.getItem(KEY) || '[]');
+      
+      const list = window.StorageUtils.get(window.SITE_CONFIG.storageKeys.messages, []);
       list.push(payload);
-      localStorage.setItem(KEY, JSON.stringify(list));
+      window.StorageUtils.set(window.SITE_CONFIG.storageKeys.messages, list);
 
-      alert('✅ ¡Gracias por tu mensaje! Te responderemos pronto.');
-      contactForm.reset();
-      contactForm.classList.remove('was-validated');
+      window.UIUtils.showToast('✅ ¡Gracias por tu mensaje! Te responderemos pronto.', 'success');
+      window.FormUtils.resetForm(contactForm);
     });
 
     phoneEl?.addEventListener('input', () => {
-      phoneEl.value = phoneEl.value.replace(/[^\d+\s()-]/g, '');
+      phoneEl.value = window.FormUtils.sanitizePhone(phoneEl);
     });
   }
 
@@ -57,18 +54,16 @@
     });
 
     phoneEl?.addEventListener('input', () => {
-      phoneEl.value = phoneEl.value.replace(/[^\d+\s()-]/g, '');
+      phoneEl.value = window.FormUtils.sanitizePhone(phoneEl);
     });
 
     regForm.addEventListener('submit', (e) => {
       e.preventDefault();
       validatePasswords();
-      if (!regForm.checkValidity()) {
-        regForm.classList.add('was-validated');
-        return;
-      }
+      if (!window.FormUtils.validateForm(regForm)) return;
+      
       if (!termsEl.checked) {
-        alert('⚠️ Debés aceptar los términos para continuar.');
+        window.UIUtils.showToast('⚠️ Debés aceptar los términos para continuar.', 'warning');
         termsEl.focus();
         return;
       }
@@ -83,22 +78,20 @@
         createdAt: new Date().toISOString()
       };
 
-      const KEY = 'dlab_users';
-      const users = JSON.parse(localStorage.getItem(KEY) || '[]');
+      const users = window.StorageUtils.get(window.SITE_CONFIG.storageKeys.users, []);
       const exists = users.some(u => u.email === user.email);
       if (exists) {
-        alert('⚠️ Ya existe un usuario con este email.');
+        window.UIUtils.showToast('⚠️ Ya existe un usuario con este email.', 'warning');
         return;
       }
 
       users.push(user);
-      localStorage.setItem(KEY, JSON.stringify(users));
+      window.StorageUtils.set(window.SITE_CONFIG.storageKeys.users, users);
 
       if (confirm('✅ Registro exitoso. ¿Querés ir al inicio?')) {
         window.location.href = '../index.html';
       } else {
-        regForm.reset();
-        regForm.classList.remove('was-validated');
+        window.FormUtils.resetForm(regForm);
       }
     });
   }
@@ -111,10 +104,8 @@
 
     newsForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      if (!newsForm.checkValidity()) {
-        newsForm.classList.add('was-validated');
-        return;
-      }
+      if (!window.FormUtils.validateForm(newsForm)) return;
+      
       if (!consEl.checked) {
         if (!confirm('No marcaste consentimiento. ¿Confirmás igualmente la suscripción?')) {
           return;
@@ -128,50 +119,20 @@
         createdAt: new Date().toISOString()
       };
 
-      const KEY = 'dlab_news_subs';
-      const subs = JSON.parse(localStorage.getItem(KEY) || '[]');
+      const subs = window.StorageUtils.get(window.SITE_CONFIG.storageKeys.newsSubs, []);
       const exists = subs.some(s => s.email === sub.email);
       if (exists) {
-        alert('⚠️ Ese email ya está suscripto.');
+        window.UIUtils.showToast('⚠️ Ese email ya está suscripto.', 'warning');
         return;
       }
 
       subs.push(sub);
-      localStorage.setItem(KEY, JSON.stringify(subs));
+      window.StorageUtils.set(window.SITE_CONFIG.storageKeys.newsSubs, subs);
 
-      alert('✅ ¡Suscripción registrada! Te enviaremos novedades.');
-      newsForm.reset();
-      newsForm.classList.remove('was-validated');
+      window.UIUtils.showToast('✅ ¡Suscripción registrada! Te enviaremos novedades.', 'success');
+      window.FormUtils.resetForm(newsForm);
     });
   }
 })();
 
-(() => {
-const form = document.getElementById('contactForm');
-if (!form) return;
-form.addEventListener('submit', async (e) => {
-e.preventDefault();
-if (!form.checkValidity()) { form.classList.add('was-validated'); return; }
-await $swal({ title: 'Enviando', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-try {
-const payload = {
-nombre: document.getElementById('contactName').value.trim(),
-email: document.getElementById('contactEmail').value.trim(),
-tel: document.getElementById('contactPhone').value.trim(),
-msg: document.getElementById('contactMessage').value.trim(),
-fecha: new Date().toISOString()
-};
-await simulateNetwork(1000, 0.1);
-const KEY = 'dlab_messages';
-const list = JSON.parse(localStorage.getItem(KEY) || '[]');
-list.push(payload);
-localStorage.setItem(KEY, JSON.stringify(list));
-toast('¡Gracias por tu mensaje! ✅', 'success');
-await $swal({ icon: 'success', title: 'Mensaje enviado' });
-form.reset();
-form.classList.remove('was-validated');
-} catch (err) {
-await $swal({ icon: 'error', title: 'No se pudo enviar', text: err.message || 'Probá nuevamente en unos minutos.' });
-}
-});
-})();
+// Código duplicado eliminado - ya está manejado arriba

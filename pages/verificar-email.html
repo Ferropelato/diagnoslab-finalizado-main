@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Verificar tu email - DiagnosLab" />
+  <meta name="keywords" content="verificar email, confirmar cuenta, DiagnosLab" />
+  <meta name="author" content="DiagnosLab" />
+  <title>Verificar Email - DiagnosLab</title>
+  <link rel="stylesheet" href="../css/optimized.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js" defer></script>
+  <script src="../js/utils.js" defer></script>
+  <script src="../js/auth-manager.js" defer></script>
+  <script src="../js/cart-manager.js" defer></script>
+  <script src="../js/notification-manager.js" defer></script>
+  <script src="../js/email-manager.js" defer></script>
+  <script src="../js/main.js" defer></script>
+</head>
+
+<body>
+  <div>
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+          <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+            <img src="../acces/logo.png" alt="DiagnosLab" height="36" />
+            <span class="fw-semibold">DiagnosLab</span>
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="../index.html">Inicio</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="./productos.html">Productos</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="./servicios.html">Servicios</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="./nosotros.html">Nosotros</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="./contacto.html">Contacto</a>
+              </li>
+              <li class="nav-item" id="loginLink">
+                <a class="nav-link" href="./login.html">Iniciar Sesión</a>
+              </li>
+              <li class="nav-item" id="registerLink">
+                <a class="nav-link" href="./registro.html">Registro</a>
+              </li>
+              <li class="nav-item" id="userMenu" style="display: none;">
+                <div id="userInfo"></div>
+              </li>
+              <li class="nav-item position-relative" id="notificationMenu" style="display: none;">
+                <a class="nav-link" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-bell"></i>
+                  <span id="notificationBadge" class="badge bg-danger position-absolute translate-middle p-1"
+                    style="top: 0; right: 0; font-size: 0.7rem; display: none">0</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;">
+                  <li class="dropdown-header d-flex justify-content-between align-items-center">
+                    <span>Notificaciones</span>
+                    <button class="btn btn-sm btn-outline-primary" id="markAllAsRead">Marcar todas como leídas</button>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <div id="notificationDropdown">
+                    <!-- Las notificaciones se cargarán aquí -->
+                  </div>
+                </ul>
+              </li>
+              <li class="nav-item position-relative">
+                <a class="nav-link" href="./carrito.html">🛒
+                  <span id="cartCount" class="badge bg-danger position-absolute translate-middle p-1"
+                    style="top: 0; right: 0; font-size: 0.7rem; display: none">0</span>
+                </a>
+              </li>
+              <span id="liveClock" class="nav-link small text-white-50 d-none d-lg-inline">--:--:--</span>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="py-5">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+              <div class="card-body p-5">
+                <div class="text-center mb-4">
+                  <i class="bi bi-envelope-check text-primary" style="font-size: 4rem;"></i>
+                  <h2 class="mt-3 mb-1">Verificar Email</h2>
+                  <p class="text-muted">Confirma tu dirección de email para activar tu cuenta</p>
+                </div>
+
+                <!-- Formulario de verificación -->
+                <form id="verificationForm" novalidate>
+                  <div class="mb-4">
+                    <label for="verificationEmail" class="form-label">Email a verificar</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                      <input type="email" class="form-control" id="verificationEmail" 
+                             placeholder="tu@email.com" required>
+                    </div>
+                    <div class="invalid-feedback">
+                      Por favor ingresa un email válido.
+                    </div>
+                  </div>
+
+                  <div class="mb-4">
+                    <label for="verificationToken" class="form-label">Código de verificación</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-key"></i></span>
+                      <input type="text" class="form-control" id="verificationToken" 
+                             placeholder="Pega aquí el código del email" required>
+                    </div>
+                    <div class="invalid-feedback">
+                      Por favor ingresa el código de verificación.
+                    </div>
+                    <div class="form-text">
+                      <i class="bi bi-info-circle me-1"></i>
+                      El código fue enviado a tu email. Si no lo recibiste, revisa la carpeta de spam.
+                    </div>
+                  </div>
+
+                  <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                      <i class="bi bi-check-circle me-2"></i>Verificar Email
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="resendVerification()">
+                      <i class="bi bi-arrow-clockwise me-2"></i>Reenviar Código
+                    </button>
+                  </div>
+                </form>
+
+                <!-- Información adicional -->
+                <div class="mt-4">
+                  <div class="alert alert-info">
+                    <h6 class="alert-heading">
+                      <i class="bi bi-lightbulb me-2"></i>¿No recibiste el email?
+                    </h6>
+                    <ul class="mb-0 small">
+                      <li>Revisa tu carpeta de spam o correo no deseado</li>
+                      <li>Verifica que el email esté escrito correctamente</li>
+                      <li>El código expira en 24 horas</li>
+                      <li>Puedes solicitar un nuevo código si es necesario</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Enlaces útiles -->
+                <div class="text-center mt-4">
+                  <p class="mb-2">
+                    <a href="login.html" class="text-decoration-none">
+                      <i class="bi bi-arrow-left me-1"></i>Volver al Login
+                    </a>
+                  </p>
+                  <p class="mb-0">
+                    <a href="registro.html" class="text-decoration-none">
+                      <i class="bi bi-person-plus me-1"></i>Crear Nueva Cuenta
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-diag text-white text-center py-4"
+      style="background: linear-gradient(270deg, #4dabf7, #0d6efd)">
+      <div class="container">
+        <p class="mb-0">
+          © 2025 DiagnosLab - Todos los derechos reservados. by Fer Ropelato
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Manejar formulario de verificación
+    document.getElementById('verificationForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('verificationEmail').value.trim();
+      const token = document.getElementById('verificationToken').value.trim();
+      
+      if (!email || !token) {
+        window.UIUtils.showToast('Por favor completa todos los campos', 'warning');
+        return;
+      }
+      
+      const success = await window.emailManager.verifyEmail(email, token);
+      if (success) {
+        // Redirigir a login después de un breve delay
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+      }
+    });
+
+    // Función para reenviar verificación
+    window.resendVerification = async () => {
+      const email = document.getElementById('verificationEmail').value.trim();
+      
+      if (!email) {
+        window.UIUtils.showToast('Por favor ingresa tu email primero', 'warning');
+        return;
+      }
+      
+      const success = await window.emailManager.resendEmail(email);
+      if (success) {
+        window.UIUtils.showToast('Código reenviado exitosamente', 'success');
+      }
+    };
+
+    // Cargar email desde URL si está disponible
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get('email');
+      if (email) {
+        document.getElementById('verificationEmail').value = email;
+      }
+    });
+  </script>
+</body>
+
+</html>

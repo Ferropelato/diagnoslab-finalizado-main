@@ -2,8 +2,7 @@
   if (!document.title.toLowerCase().includes('productos')) return;
 
   const CATEGORY_IDS = ['sangre', 'orina', 'otros', 'aparatologia'];
-  const $ = (s, c = document) => c.querySelector(s);
-  const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+  // Usar utilidades comunes
 
   const allCards = $$('.prod-card');
   const searchInput = $('#buscadorProductos');
