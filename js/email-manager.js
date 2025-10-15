@@ -1,8 +1,3 @@
-/**
- * Email Manager - Sistema de Simulación de Emails
- * Simula el envío de emails de confirmación para el registro
- */
-
 class EmailManager {
   constructor() {
     this.pendingVerifications = new Map();
@@ -10,24 +5,20 @@ class EmailManager {
     this.loadPendingVerifications();
   }
 
-  // Cargar verificaciones pendientes desde localStorage
   loadPendingVerifications() {
     const stored = window.StorageUtils.get(this.verificationKey, {});
     this.pendingVerifications = new Map(Object.entries(stored));
   }
 
-  // Guardar verificaciones pendientes en localStorage
   savePendingVerifications() {
     const obj = Object.fromEntries(this.pendingVerifications);
     window.StorageUtils.set(this.verificationKey, obj);
   }
 
-  // Generar token de verificación único
   generateVerificationToken() {
     return 'verify_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
-  // Simular envío de email de confirmación
   async sendConfirmationEmail(userData) {
     const token = this.generateVerificationToken();
     const verificationData = {
@@ -38,20 +29,16 @@ class EmailManager {
       verified: false
     };
 
-    // Guardar en verificaciones pendientes
     this.pendingVerifications.set(userData.email, verificationData);
     this.savePendingVerifications();
 
-    // Simular delay de envío
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // Mostrar modal con "email enviado"
     this.showEmailSentModal(userData.email, token);
 
     return { success: true, token };
   }
 
-  // Mostrar modal de email enviado
   showEmailSentModal(email, token) {
     const modalHtml = `
       <div class="modal fade" id="emailSentModal" tabindex="-1" aria-labelledby="emailSentModalLabel" aria-hidden="true">
@@ -105,21 +92,17 @@ class EmailManager {
       </div>
     `;
 
-    // Remover modal existente si existe
     const existingModal = document.getElementById('emailSentModal');
     if (existingModal) {
       existingModal.remove();
     }
 
-    // Agregar modal al body
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-    // Mostrar modal
     const modal = new bootstrap.Modal(document.getElementById('emailSentModal'));
     modal.show();
   }
 
-  // Verificar email con token
   async verifyEmail(email, token) {
     const verificationData = this.pendingVerifications.get(email);
     
@@ -140,22 +123,18 @@ class EmailManager {
       return false;
     }
 
-    // Marcar como verificado
     verificationData.verified = true;
     verificationData.verifiedAt = new Date().toISOString();
     this.pendingVerifications.set(email, verificationData);
     this.savePendingVerifications();
 
-    // Activar usuario en el sistema de autenticación
     await this.activateUser(verificationData);
 
     window.UIUtils.showToast('¡Email verificado exitosamente! Tu cuenta está activa', 'success');
-    
-    // Cerrar modal
+
     const modal = bootstrap.Modal.getInstance(document.getElementById('emailSentModal'));
     if (modal) modal.hide();
 
-    // Redirigir a login
     setTimeout(() => {
       window.location.href = 'login.html';
     }, 1500);
@@ -163,7 +142,6 @@ class EmailManager {
     return true;
   }
 
-  // Activar usuario en el sistema de autenticación
   async activateUser(verificationData) {
     const users = window.StorageUtils.get('dlab_users', []);
     const userIndex = users.findIndex(u => u.email === verificationData.email);
@@ -175,7 +153,6 @@ class EmailManager {
     }
   }
 
-  // Reenviar email
   async resendEmail(email) {
     const verificationData = this.pendingVerifications.get(email);
     
@@ -184,7 +161,6 @@ class EmailManager {
       return false;
     }
 
-    // Generar nuevo token
     const newToken = this.generateVerificationToken();
     verificationData.token = newToken;
     verificationData.createdAt = new Date().toISOString();
@@ -194,8 +170,7 @@ class EmailManager {
     this.savePendingVerifications();
 
     window.UIUtils.showToast('Email reenviado exitosamente', 'success');
-    
-    // Actualizar el código en el modal
+
     const codeElement = document.querySelector('#emailSentModal code');
     if (codeElement) {
       codeElement.textContent = newToken;
@@ -204,13 +179,11 @@ class EmailManager {
     return true;
   }
 
-  // Verificar si un email está verificado
   isEmailVerified(email) {
     const verificationData = this.pendingVerifications.get(email);
     return verificationData && verificationData.verified;
   }
 
-  // Limpiar verificaciones expiradas
   cleanExpiredVerifications() {
     const now = new Date();
     for (const [email, data] of this.pendingVerifications.entries()) {
@@ -221,7 +194,6 @@ class EmailManager {
     this.savePendingVerifications();
   }
 
-  // Obtener estadísticas de verificaciones
   getVerificationStats() {
     const total = this.pendingVerifications.size;
     const verified = Array.from(this.pendingVerifications.values()).filter(v => v.verified).length;
@@ -231,15 +203,12 @@ class EmailManager {
   }
 }
 
-// Inicializar el gestor de emails
 window.emailManager = new EmailManager();
 
-// Limpiar verificaciones expiradas al cargar
 document.addEventListener('DOMContentLoaded', () => {
   window.emailManager.cleanExpiredVerifications();
 });
 
-// Funciones globales para compatibilidad
 window.sendConfirmationEmail = (userData) => window.emailManager.sendConfirmationEmail(userData);
 window.verifyEmail = (email, token) => window.emailManager.verifyEmail(email, token);
 window.isEmailVerified = (email) => window.emailManager.isEmailVerified(email);

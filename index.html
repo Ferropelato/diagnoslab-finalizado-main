@@ -64,17 +64,20 @@
                             <li class="nav-item position-relative" id="notificationMenu" style="display: none;">
                                 <a class="nav-link" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-bell"></i>
-                                    <span id="notificationBadge" class="badge bg-danger position-absolute translate-middle p-1"
+                                    <span id="notificationBadge"
+                                        class="badge bg-danger position-absolute translate-middle p-1"
                                         style="top: 0; right: 0; font-size: 0.7rem; display: none">0</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;">
                                     <li class="dropdown-header d-flex justify-content-between align-items-center">
                                         <span>Notificaciones</span>
-                                        <button class="btn btn-sm btn-outline-primary" id="markAllAsRead">Marcar todas como leídas</button>
+                                        <button class="btn btn-sm btn-outline-primary" id="markAllAsRead">Marcar todas
+                                            como leídas</button>
                                     </li>
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                     <div id="notificationDropdown">
-                                        <!-- Las notificaciones se cargarán aquí -->
                                     </div>
                                 </ul>
                             </li>
@@ -225,8 +228,11 @@
             <section class="home-news py-5">
                 <div class="container">
                     <h2 class="h4 text-center mb-3">Recibí novedades</h2>
-                    <form class="home-news__form" action="#" method="post">
-                        <input type="email" name="email" placeholder="Tu email" required />
+                    <form class="home-news__form" action="#" method="post" novalidate>
+                        <input id="homeNewsEmail" type="email" name="email" placeholder="Tu email" required
+                            pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$" />
+                        <div class="invalid-feedback"
+                            style="display:block; font-size:.85rem; color:#dc3545; min-height:1.2em;"></div>
                         <button type="submit">Suscribirme</button>
                     </form>
                 </div>
@@ -248,6 +254,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <div id="aria-live-region" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
 </body>
 
 </html>

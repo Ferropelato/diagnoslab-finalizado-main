@@ -76,7 +76,25 @@ window.ValidationUtils = {
 
 // Utilidades de UI
 window.UIUtils = {
+  /**
+   * Anuncia un mensaje en la región aria-live (si existe en el DOM).
+   * Para activarla, agregá en tu HTML base:
+   * <div id="aria-live-region" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+   */
+  announce(text) {
+    try {
+      const r = document.getElementById('aria-live-region');
+      if (!r) return;
+      // Vaciar y reasignar fuerza a los lectores a releer el texto
+      r.textContent = '';
+      r.textContent = String(text ?? '');
+    } catch { /* noop */ }
+  },
+
   showToast(text, type = 'info') {
+    // Anunciar también para accesibilidad (si hay live region)
+    window.UIUtils.announce?.(text);
+
     try {
       if (window.Toastify) {
         Toastify({ 
@@ -157,14 +175,22 @@ window.AnimationUtils = {
   }
 };
 
-// Utilidades de búsqueda
+// Utils de búsqueda con debounce y mensajes accesibles
 window.SearchUtils = {
+  // Filtro con feedback accesible
   filterCards(cards, query, searchFields = ['data-tags', 'h3']) {
-    const q = query.toLowerCase().trim();
-    if (!q) return cards.forEach(card => card.style.display = '');
-    
+    const q = (query || '').toLowerCase().trim();
+    let matchesCount = 0;
+
+    if (!q) {
+      cards.forEach(card => card.style.display = '');
+      window.UIUtils.announce?.('Mostrando todos los productos');
+      return;
+    }
+
     cards.forEach(card => {
       let matches = false;
+
       searchFields.forEach(field => {
         if (field.startsWith('data-')) {
           const value = card.getAttribute(field) || '';
@@ -174,8 +200,25 @@ window.SearchUtils = {
           if (element && element.textContent.toLowerCase().includes(q)) matches = true;
         }
       });
+
       card.style.display = matches ? '' : 'none';
+      if (matches) matchesCount++;
     });
+
+    // Aviso accesible de resultados
+    const msg = matchesCount > 0
+      ? `${matchesCount} productos encontrados para "${q}"`
+      : `No se encontraron productos para "${q}"`;
+    window.UIUtils.announce?.(msg);
+  },
+
+  // Debounce genérico (para inputs de búsqueda)
+  debounce(fn, delay = 300) {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn(...args), delay);
+    };
   }
 };
 

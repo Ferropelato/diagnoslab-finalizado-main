@@ -45,10 +45,10 @@ class CartManager {
       return true;
     } catch (e) {
       console.error('Error agregando al carrito:', e);
-      window.UIUtils.showAlert({ 
-        icon: 'error', 
-        title: 'No se pudo agregar', 
-        text: e.message || 'Error inesperado' 
+      window.UIUtils.showAlert({
+        icon: 'error',
+        title: 'No se pudo agregar',
+        text: e.message || 'Error inesperado'
       });
       return false;
     }
@@ -69,6 +69,7 @@ class CartManager {
     this.saveCart();
     this.updateUI();
     window.UIUtils.showToast('Carrito vaciado 🧹', 'info');
+    window.UIUtils.announce?.('El carrito se vació');
   }
 
   async clearCartWithConfirmation() {
@@ -76,7 +77,7 @@ class CartManager {
       window.UIUtils.showToast('El carrito ya está vacío', 'info');
       return;
     }
-    
+
     const confirmed = await window.UIUtils.confirm('¿Vaciar carrito por completo?');
     if (confirmed) {
       this.clearCart();
@@ -93,7 +94,7 @@ class CartManager {
   updateBadge() {
     const badge = $('#cartCount');
     if (!badge) return;
-    
+
     const { totalItems } = this.getTotals();
     if (totalItems > 0) {
       badge.textContent = totalItems > 99 ? '99+' : String(totalItems);
@@ -104,17 +105,42 @@ class CartManager {
   }
 
   setupEventListeners() {
-    // Botones de agregar al carrito
+    // Botones de agregar al carrito (respeta min/step/max del input y avisa si ajusta)
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('.btn-add');
       if (!btn) return;
-      
+
       const card = btn.closest('.prod-card');
       if (!card) return;
 
       const item = this.parseProductCard(card);
       const qtyInput = card.querySelector('.qty-input');
-      const qty = Math.max(1, parseInt(qtyInput?.value, 10) || 1);
+
+      // Leer cantidad del input (o 1 si no hay)
+      let qty = Math.max(1, parseInt(qtyInput?.value, 10) || 1);
+
+      // Tomar atributos del input con valores por defecto
+      const min  = Math.max(1, parseInt(qtyInput?.getAttribute('min')  || '1',   10));
+      const step = Math.max(1, parseInt(qtyInput?.getAttribute('step') || '1',   10));
+      const max  = Math.max(min, parseInt(qtyInput?.getAttribute('max')  || '999', 10));
+
+      const original = qty;
+
+      // Ajuste a múltiplo de step ≥ min
+      if (step > 1) {
+        const base = Math.max(min, qty);
+        qty = Math.ceil(base / step) * step;
+      }
+
+      // Limitar a [min, max]
+      qty = Math.min(Math.max(qty, min), max);
+
+      // Si cambió, reflejar en UI y avisar
+      if (qty !== original) {
+        if (qtyInput) qtyInput.value = qty;
+        window.UIUtils.showToast(`Cantidad ajustada a ${qty} (mín. ${min}, máx. ${max}, paso ${step})`, 'warning');
+        window.UIUtils.announce?.(`Cantidad ajustada a ${qty}`);
+      }
 
       this.addItem(item, qty);
     }, { passive: false });
@@ -123,7 +149,7 @@ class CartManager {
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-remove]');
       if (!btn) return;
-      
+
       const id = btn.getAttribute('data-remove');
       this.removeItem(id);
     });
@@ -221,7 +247,7 @@ class CartManager {
         window.StorageUtils.set(`dlab_orders_${user.email}`, orders);
         window.UIUtils.showToast(`✅ ¡Pedido #${order.id} creado exitosamente!`, 'success');
       }
-      
+
       this.clearCart();
     }
   }

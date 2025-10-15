@@ -1,5 +1,5 @@
 (function cartOffcanvas() {
-  // Usar utilidades comunes
+
   function getCart() {
     return window.cartManager ? window.cartManager.cart : [];
   }
@@ -66,10 +66,6 @@
   }
 
   window.renderCartUI = renderCartUI;
-
-  // Los event listeners ahora están en cart-manager.js
-
-  // Los event listeners ahora están en cart-manager.js
 
   const off = document.getElementById('offcanvasCart');
   if (off) off.addEventListener('shown.bs.offcanvas', renderCartUI);

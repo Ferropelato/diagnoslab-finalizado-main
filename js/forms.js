@@ -1,25 +1,24 @@
 (function formsModule() {
-  // Usar utilidades comunes
-
+  // CONTACTO
   const contactForm = $('#contactForm');
   if (contactForm) {
-    const nameEl = $('#contactName', contactForm);
+    const nameEl  = $('#contactName', contactForm);
     const emailEl = $('#contactEmail', contactForm);
     const phoneEl = $('#contactPhone', contactForm);
-    const msgEl = $('#contactMessage', contactForm);
+    const msgEl   = $('#contactMessage', contactForm);
 
     contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
       if (!window.FormUtils.validateForm(contactForm)) return;
-      
+
       const payload = {
-        nombre: nameEl.value.trim(),
-        email: emailEl.value.trim(),
-        telefono: phoneEl.value.trim(),
-        mensaje: msgEl.value.trim(),
+        nombre:  (nameEl?.value || '').trim(),
+        email:   (emailEl?.value || '').trim(),
+        telefono:(phoneEl?.value || '').trim(),
+        mensaje: (msgEl?.value   || '').trim(),
         fecha: new Date().toISOString()
       };
-      
+
       const list = window.StorageUtils.get(window.SITE_CONFIG.storageKeys.messages, []);
       list.push(payload);
       window.StorageUtils.set(window.SITE_CONFIG.storageKeys.messages, list);
@@ -33,6 +32,7 @@
     });
   }
 
+  // REGISTRO
   const regForm = $('#registerForm');
   if (regForm) {
     const nameEl  = $('#regName', regForm);
@@ -45,8 +45,8 @@
     const termsEl = $('#regTerms', regForm);
 
     const validatePasswords = () => {
-      const ok = pass1El.value.length >= 8 && pass1El.value === pass2El.value;
-      pass2El.setCustomValidity(ok ? '' : 'Las contraseñas no coinciden o tienen menos de 8 caracteres');
+      const ok = (pass1El?.value || '').length >= 8 && pass1El?.value === pass2El?.value;
+      pass2El?.setCustomValidity(ok ? '' : 'Las contraseñas no coinciden o tienen menos de 8 caracteres');
     };
     ['input','blur'].forEach(evt => {
       pass1El?.addEventListener(evt, validatePasswords);
@@ -61,24 +61,24 @@
       e.preventDefault();
       validatePasswords();
       if (!window.FormUtils.validateForm(regForm)) return;
-      
-      if (!termsEl.checked) {
+
+      if (!termsEl?.checked) {
         window.UIUtils.showToast('⚠️ Debés aceptar los términos para continuar.', 'warning');
-        termsEl.focus();
+        termsEl?.focus();
         return;
       }
 
       const user = {
-        nombre: nameEl.value.trim(),
-        apellido: lastEl.value.trim(),
-        email: emailEl.value.trim().toLowerCase(),
-        telefono: phoneEl.value.trim(),
-        direccion: (addrEl?.value || '').trim(),
-        pass: pass1El.value,
+        nombre:    (nameEl?.value  || '').trim(),
+        apellido:  (lastEl?.value  || '').trim(),
+        email:     (emailEl?.value || '').trim().toLowerCase(),
+        telefono:  (phoneEl?.value || '').trim(),
+        direccion: (addrEl?.value  || '').trim(),
+        pass: pass1El?.value || '',
         createdAt: new Date().toISOString()
       };
 
-      const users = window.StorageUtils.get(window.SITE_CONFIG.storageKeys.users, []);
+      const users  = window.StorageUtils.get(window.SITE_CONFIG.storageKeys.users, []);
       const exists = users.some(u => u.email === user.email);
       if (exists) {
         window.UIUtils.showToast('⚠️ Ya existe un usuario con este email.', 'warning');
@@ -88,38 +88,51 @@
       users.push(user);
       window.StorageUtils.set(window.SITE_CONFIG.storageKeys.users, users);
 
-      if (confirm('✅ Registro exitoso. ¿Querés ir al inicio?')) {
-        window.location.href = '../index.html';
-      } else {
-        window.FormUtils.resetForm(regForm);
-      }
+      // Reemplazo del confirm() por SweetAlert2 (UIUtils.showAlert)
+      window.UIUtils.showAlert({
+        icon: 'success',
+        title: '¡Registro exitoso!',
+        text: 'Revisá tu email para verificar tu cuenta.',
+        showCancelButton: true,
+        confirmButtonText: 'Ir al inicio',
+        cancelButtonText: 'Seguir aquí'
+      }).then((res) => {
+        if (res?.isConfirmed) {
+          window.location.href = '../index.html';
+        } else {
+          window.FormUtils.resetForm(regForm);
+          window.UIUtils.showToast('Podés seguir navegando 😉', 'info');
+        }
+      });
     });
   }
 
+  // NEWSLETTER
   const newsForm = $('#newsletterForm');
   if (newsForm) {
     const emailEl = $('#newsEmail', newsForm);
     const freqEl  = $('#newsFreq', newsForm);
     const consEl  = $('#newsConsent', newsForm);
 
-    newsForm.addEventListener('submit', (e) => {
+    newsForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!window.FormUtils.validateForm(newsForm)) return;
-      
-      if (!consEl.checked) {
-        if (!confirm('No marcaste consentimiento. ¿Confirmás igualmente la suscripción?')) {
-          return;
-        }
+
+      // Reemplazo del confirm() nativo por UIUtils.confirm (SweetAlert2 si está disponible)
+      if (!consEl?.checked) {
+        const ok = await (window.UIUtils.confirm?.('No marcaste consentimiento. ¿Confirmás igualmente la suscripción?') ??
+                          Promise.resolve(confirm('No marcaste consentimiento. ¿Confirmás igualmente la suscripción?')));
+        if (!ok) return;
       }
 
       const sub = {
-        email: (emailEl.value || '').trim().toLowerCase(),
-        frecuencia: freqEl.value,
-        consent: !!consEl.checked,
-        createdAt: new Date().toISOString()
+        email:      (emailEl?.value || '').trim().toLowerCase(),
+        frecuencia: (freqEl?.value  || '').trim(),
+        consent:    !!consEl?.checked,
+        createdAt:  new Date().toISOString()
       };
 
-      const subs = window.StorageUtils.get(window.SITE_CONFIG.storageKeys.newsSubs, []);
+      const subs   = window.StorageUtils.get(window.SITE_CONFIG.storageKeys.newsSubs, []);
       const exists = subs.some(s => s.email === sub.email);
       if (exists) {
         window.UIUtils.showToast('⚠️ Ese email ya está suscripto.', 'warning');
@@ -134,5 +147,3 @@
     });
   }
 })();
-
-// Código duplicado eliminado - ya está manejado arriba

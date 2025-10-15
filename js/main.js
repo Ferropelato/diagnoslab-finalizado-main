@@ -1,22 +1,14 @@
-// Las utilidades ahora están en utils.js
-
 document.documentElement.classList.add('js');
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DiagnosLab: bienvenido');
+function debounce(fn, wait = 300) {
+    let t;
+    return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(null, args), wait);
+    };
+}
 
-    const nav = document.querySelector('.navbar');
-    if (nav) {
-        const onScroll = () => nav.classList.toggle('is-scrolled', window.scrollY > 8);
-        onScroll();
-        window.addEventListener('scroll', onScroll, { passive: true });
-    }
-});
-
-// Constantes y variables globales ahora están en utils.js y cart-manager.js
 let newsletter = [];
-
-// Funciones de carrito ahora están en cart-manager.js
 
 function loadNewsletter() {
     newsletter = window.StorageUtils.get(window.SITE_CONFIG.storageKeys.news, []);
@@ -26,12 +18,20 @@ function saveNewsletter() {
     window.StorageUtils.set(window.SITE_CONFIG.storageKeys.news, newsletter);
 }
 
-// Funciones de carrito ahora están en cart-manager.js
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+}
 
 function subscribeEmail(email) {
-    if (!email) return window.UIUtils.showToast('Ingresá un email válido.', 'warning');
+    if (!email || !isValidEmail(email)) {
+        window.UIUtils.showToast('Ingresá un email válido (ej: usuario@dominio.com).', 'warning');
+        return;
+    }
     const exists = newsletter.includes(email.toLowerCase());
-    if (exists) return window.UIUtils.showToast('Este email ya está suscripto.', 'info');
+    if (exists) {
+        window.UIUtils.showToast('Este email ya está suscripto.', 'info');
+        return;
+    }
     newsletter.push(email.toLowerCase());
     saveNewsletter();
     window.UIUtils.showToast('📧 ¡Gracias por suscribirte! Revisá tu correo.', 'success');
@@ -65,57 +65,72 @@ function applyTheme(theme) {
     document.documentElement.dataset.theme = theme;
 }
 
-// bindAddButtons ahora está en cart-manager.js
-
 function setupProductsSearch() {
     const input = $('#buscadorProductos');
     if (!input) return;
     const cards = $$('.prod-card');
+
     const filter = () => {
         window.SearchUtils.filterCards(cards, input.value);
+        const live = document.getElementById('aria-live-region');
+        if (live) {
+            const visibles = [...cards].filter(c => c.style.display !== 'none').length;
+            live.textContent = `${visibles} productos visibles`;
+        }
     };
-    input.addEventListener('input', filter);
+
+    input.addEventListener('input', debounce(filter, 300)); // ← usa el local
 }
 
 function setupNewsletterForm() {
-    const form = $('.home-news__form');
+    const form = document.querySelector('.home-news__form');
     if (!form) return;
+    const input = form.querySelector('input[type="email"]');
+    const feedback = form.querySelector('.invalid-feedback');
+
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const email = form.querySelector('input[type="email"]')?.value.trim();
-        subscribeEmail(email);
+        if (!input.checkValidity()) {
+            form.classList.add('was-validated');
+            feedback.textContent = 'Ingresá un email válido (ej: usuario@dominio.com).';
+            input.focus();
+            window.UIUtils.announce('Email inválido en newsletter');
+            return;
+        }
+        subscribeEmail(input.value.trim());
         form.reset();
+        form.classList.remove('was-validated');
+        feedback.textContent = '';
+        window.UIUtils.showToast('¡Te suscribiste a las novedades! 📬', 'success');
     });
 }
 
-function maybeWelcome() {
-    if (localStorage.getItem(window.SITE_CONFIG.storageKeys.welcome) === '1') return;
-    const nombre = prompt(`¡Bienvenido/a a ${window.SITE_CONFIG.name}! ¿Cómo te llamás? (opcional)`);
-    if (nombre && nombre.trim().length > 0) {
-        alert(`Hola, ${nombre.trim()} 👋\nSi necesitás ayuda, escribime desde "Contacto".`);
-    } else {
-        alert(`¡Bienvenido/a! Podés explorar productos y servicios.\nAbrí "Productos" y probá agregar items al carrito.`);
-    }
-    localStorage.setItem(window.SITE_CONFIG.storageKeys.welcome, '1');
+function showWelcomeBanner() {
+    const key = window.SITE_CONFIG.storageKeys.welcome;
+    if (localStorage.getItem(key) === '1') return;
+
+    const host = document.querySelector('main') || document.body;
+    const banner = document.createElement('div');
+    banner.className = 'dlb-welcome alert alert-info d-flex align-items-center justify-content-between';
+    banner.setAttribute('role', 'region');
+    banner.setAttribute('aria-label', 'Bienvenida');
+    banner.innerHTML = `
+    <div class="me-3">
+      <strong>¡Bienvenido/a a ${window.SITE_CONFIG.name}!</strong>
+      <span class="ms-2">Explorá productos y servicios. Si necesitás ayuda, abrí “Contacto”.</span>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-primary">Entendido</button>
+  `;
+    const btn = banner.querySelector('button');
+    btn.addEventListener('click', () => {
+        banner.remove();
+        localStorage.setItem(key, '1');
+        window.UIUtils.showToast('¡Que tengas una gran experiencia! ✨', 'success');
+        const live = document.getElementById('aria-live-region');
+        if (live) live.textContent = 'Bienvenida cerrada';
+    });
+    host.prepend(banner);
 }
-
-// setupInViewAnimations ahora está en utils.js
-
-// setupCartLink ahora está en cart-manager.js
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadNewsletter();
-
-    setupNavbarShadow();
-    setupThemeToggle();
-
-    setupProductsSearch();
-    setupNewsletterForm();
-
-    maybeWelcome();
-
-    console.log(`${window.SITE_CONFIG.name} v${window.SITE_CONFIG.version} — main.js listo ✔`);
-});
 
 function startLiveClock() {
     const el = document.getElementById('liveClock');
@@ -153,4 +168,16 @@ window.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('error', (e) => { window.Swal && Swal.fire({ icon: 'error', title: 'Error', text: e.message }); });
 window.addEventListener('unhandledrejection', (e) => { window.Swal && Swal.fire({ icon: 'error', title: 'Error asíncrono', text: e.reason?.message || String(e.reason) }); });
 
-setTimeout(() => { try { window.UIUtils.showToast('¡Bienvenido a DiagnosLab 👋!'); } catch { } }, 1500);
+document.addEventListener('DOMContentLoaded', () => {
+    loadNewsletter();
+
+    setupNavbarShadow();
+    setupThemeToggle();
+
+    setupProductsSearch();
+    setupNewsletterForm();
+
+    showWelcomeBanner();
+
+    console.log(`${window.SITE_CONFIG.name} v${window.SITE_CONFIG.version} — main.js listo ✔`);
+});

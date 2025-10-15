@@ -8,10 +8,13 @@
     content="Creá tu cuenta en DiagnosLab y suscribite para recibir novedades y resultados a tiempo.">
   <meta name="author" content="DiagnosLab">
   <title>Registro & Suscripción - DiagnosLab</title>
-  <link rel="stylesheet" href="../style/style.css">
+
+  <!-- Usar el CSS compilado -->
+  <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
   <script src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js" defer></script>
@@ -66,9 +69,7 @@
                   <button class="btn btn-sm btn-outline-primary" id="markAllAsRead">Marcar todas como leídas</button>
                 </li>
                 <li><hr class="dropdown-divider"></li>
-                <div id="notificationDropdown">
-                  <!-- Las notificaciones se cargarán aquí -->
-                </div>
+                <div id="notificationDropdown"></div>
               </ul>
             </li>
             <li class="nav-item position-relative">
@@ -82,6 +83,7 @@
         </div>
       </div>
     </nav>
+
     <header class="text-white text-center py-5"
       style="background: linear-gradient(270deg, #4dabf7, #0d6efd, #004085); background-size: 600% 600%; animation: heroGradient 15s ease infinite;">
       <div class="container">
@@ -89,60 +91,71 @@
         <p class="mb-0">Creá tu cuenta y recibí novedades y recordatorios</p>
       </div>
     </header>
+
     <main class="py-5">
       <div class="container">
         <div class="row g-4">
+          <!-- Crear cuenta -->
           <div class="col-lg-7">
             <div class="p-4 border rounded shadow-sm bg-light">
               <h2 class="h4 mb-3">Crear cuenta</h2>
+
+              <!-- novalidate + feedback inline -->
               <form id="registerForm" action="#" method="post" novalidate>
                 <div class="row g-3">
                   <div class="col-md-6">
                     <label for="regName" class="form-label">Nombre</label>
-                    <input type="text" id="regName" name="nombre" class="form-control" placeholder="Tu nombre" required>
+                    <input type="text" id="regName" name="nombre" class="form-control" placeholder="Tu nombre"
+                      required autocomplete="given-name">
                     <div class="invalid-feedback">Ingresá tu nombre.</div>
                   </div>
+
                   <div class="col-md-6">
                     <label for="regLast" class="form-label">Apellido</label>
                     <input type="text" id="regLast" name="apellido" class="form-control" placeholder="Tu apellido"
-                      required>
+                      required autocomplete="family-name">
                     <div class="invalid-feedback">Ingresá tu apellido.</div>
                   </div>
+
                   <div class="col-md-6">
                     <label for="regEmail" class="form-label">Correo electrónico</label>
                     <input type="email" id="regEmail" name="email" class="form-control" placeholder="tu@email.com"
-                      required>
-                    <div class="invalid-feedback">Ingresá un email válido.</div>
+                      required pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$" autocomplete="email">
+                    <div class="invalid-feedback">Ingresá un email válido (ej: usuario@dominio.com).</div>
                   </div>
+
                   <div class="col-md-6">
                     <label for="regPhone" class="form-label">Teléfono</label>
                     <input type="tel" id="regPhone" name="telefono" class="form-control" placeholder="+54 9 ..."
-                      required>
+                      required autocomplete="tel">
                     <div class="invalid-feedback">Ingresá tu teléfono.</div>
                   </div>
+
                   <div class="col-md-6">
                     <label for="regPass" class="form-label">Contraseña</label>
                     <input type="password" id="regPass" name="password" class="form-control"
-                      placeholder="Mínimo 8 caracteres" minlength="8" required>
+                      placeholder="Mínimo 8 caracteres" minlength="8" required autocomplete="new-password">
                     <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres.</div>
                   </div>
+
                   <div class="col-md-6">
                     <label for="regPass2" class="form-label">Repetir contraseña</label>
                     <input type="password" id="regPass2" name="password2" class="form-control"
-                      placeholder="Repetí tu contraseña" minlength="8" required>
+                      placeholder="Repetí tu contraseña" minlength="8" required autocomplete="new-password">
                     <div class="invalid-feedback">Las contraseñas deben coincidir.</div>
                   </div>
+
                   <div class="col-12">
                     <label for="regAddress" class="form-label">Dirección (opcional)</label>
                     <input type="text" id="regAddress" name="direccion" class="form-control"
-                      placeholder="Calle, número, ciudad">
+                      placeholder="Calle, número, ciudad" autocomplete="street-address">
                   </div>
                 </div>
 
                 <div class="form-check mt-3">
                   <input class="form-check-input" type="checkbox" value="1" id="regTerms" required>
                   <label class="form-check-label" for="regTerms">
-                    Acepto los <a href="#" target="_blank">términos y condiciones</a>.
+                    Acepto los <a href="#" target="_blank" rel="noopener">términos y condiciones</a>.
                   </label>
                   <div class="invalid-feedback">Debés aceptar los términos para continuar.</div>
                 </div>
@@ -153,17 +166,21 @@
               </form>
             </div>
           </div>
+
+          <!-- Newsletter -->
           <div class="col-lg-5">
             <div class="p-4 border rounded shadow-sm bg-light h-100 d-flex flex-column">
               <h2 class="h5 mb-3">Suscribite al newsletter</h2>
               <p>Recibí novedades, recordatorios y recomendaciones de estudios. Podés cancelarlo cuando quieras.</p>
+
               <form id="newsletterForm" action="#" method="post" class="mt-2" novalidate>
                 <div class="mb-3">
                   <label for="newsEmail" class="form-label">Correo electrónico</label>
                   <input type="email" id="newsEmail" name="emailSus" class="form-control" placeholder="tu@email.com"
-                    required>
-                  <div class="invalid-feedback">Ingresá un email válido.</div>
+                    required pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$" autocomplete="email">
+                  <div class="invalid-feedback">Ingresá un email válido (ej: usuario@dominio.com).</div>
                 </div>
+
                 <div class="mb-3">
                   <label for="newsFreq" class="form-label">Frecuencia</label>
                   <select id="newsFreq" name="frecuencia" class="form-select" required>
@@ -174,12 +191,14 @@
                   </select>
                   <div class="invalid-feedback">Elegí una frecuencia.</div>
                 </div>
+
                 <div class="form-check mb-3">
                   <input class="form-check-input" type="checkbox" value="1" id="newsConsent">
                   <label class="form-check-label" for="newsConsent">
                     Acepto recibir comunicaciones de DiagnosLab.
                   </label>
                 </div>
+
                 <button type="submit" class="btn btn-outline-primary w-100">
                   <i class="bi bi-envelope-paper me-1"></i> Suscribirme
                 </button>
@@ -212,47 +231,30 @@
       <div class="container">
         <p class="mb-0">© 2025 DiagnosLab - Todos los derechos reservados. by Fer Ropelato</p>
         <div class="mt-2">
-          <a href="https:www.facebook.com" class="text-white me-3"><i class="bi bi-facebook"></i></a>
-          <a href="https:www.instagram.com" class="text-white me-3"><i class="bi bi-instagram"></i></a>
-          <a href="https:www.whatsapp.com" class="text-white"><i class="bi bi-whatsapp"></i></a>
+          <a href="https://www.facebook.com" class="text-white me-3" rel="noopener"><i class="bi bi-facebook"></i></a>
+          <a href="https://www.instagram.com" class="text-white me-3" rel="noopener"><i class="bi bi-instagram"></i></a>
+          <a href="https://www.whatsapp.com" class="text-white" rel="noopener"><i class="bi bi-whatsapp"></i></a>
         </div>
       </div>
     </footer>
-
   </div>
+
+  <!-- Región aria-live para mensajes accesibles (opcional, recomendado) -->
+  <div id="aria-live-region" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
-    const formRegistro = document.querySelector('form[action="#"]:not(:has(#emailSus))');
-    if (formRegistro) {
-      formRegistro.addEventListener('submit', (e) => {
-        const pass = document.getElementById('password');
-        const pass2 = document.getElementById('password2');
-        if (pass.value !== pass2.value) {
-          e.preventDefault();
-          alert('Las contraseñas no coinciden.');
-          pass2.focus();
-        }
-      });
-    }
-  </script>
-
   <style>
     @keyframes heroGradient {
-      0% {
-        background-position: 0% 50%;
-      }
-
-      50% {
-        background-position: 100% 50%;
-      }
-
-      100% {
-        background-position: 0% 50%;
-      }
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .visually-hidden{
+      position:absolute !important; width:1px; height:1px;
+      padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0);
+      white-space:nowrap; border:0;
     }
   </style>
 </body>
-
 </html>
