@@ -79,7 +79,7 @@ function setupProductsSearch() {
         }
     };
 
-    input.addEventListener('input', debounce(filter, 300)); // ← usa el local
+    input.addEventListener('input', debounce(filter, 300)); // Debounce para mejor rendimiento
 }
 
 function setupNewsletterForm() {
@@ -179,5 +179,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     showWelcomeBanner();
 
-    console.log(`${window.SITE_CONFIG.name} v${window.SITE_CONFIG.version} — main.js listo ✔`);
+    // Aplicación cargada correctamente
 });

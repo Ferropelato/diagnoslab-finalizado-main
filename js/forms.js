@@ -30,6 +30,17 @@
     phoneEl?.addEventListener('input', () => {
       phoneEl.value = window.FormUtils.sanitizePhone(phoneEl);
     });
+
+    // Validación inline de email
+    emailEl?.addEventListener('blur', () => {
+      if (emailEl.value && !window.ValidationUtils.email(emailEl.value)) {
+        emailEl.setCustomValidity('Ingresá un email válido (ej: usuario@dominio.com)');
+        emailEl.classList.add('is-invalid');
+      } else {
+        emailEl.setCustomValidity('');
+        emailEl.classList.remove('is-invalid');
+      }
+    });
   }
 
   // REGISTRO
@@ -120,8 +131,7 @@
 
       // Reemplazo del confirm() nativo por UIUtils.confirm (SweetAlert2 si está disponible)
       if (!consEl?.checked) {
-        const ok = await (window.UIUtils.confirm?.('No marcaste consentimiento. ¿Confirmás igualmente la suscripción?') ??
-                          Promise.resolve(confirm('No marcaste consentimiento. ¿Confirmás igualmente la suscripción?')));
+        const ok = await window.UIUtils.confirm('No marcaste consentimiento. ¿Confirmás igualmente la suscripción?');
         if (!ok) return;
       }
 

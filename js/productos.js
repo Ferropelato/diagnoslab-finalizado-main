@@ -111,5 +111,5 @@
 
   setActiveBtn(null);
   applyFilters();
-  console.log('Productos.js: filtros activos ✔');
+  // Filtros de productos activos
 })();

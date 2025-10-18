@@ -32,16 +32,25 @@ class CartManager {
       const addQty = Math.max(1, parseInt(qty, 10) || 1);
       if (!item || !item.id) throw new Error('Producto sin ID válido');
 
+      // Límite máximo por producto
+      const MAX_QTY_PER_ITEM = 10;
       const existingIndex = this.cart.findIndex(p => p.id === item.id);
       if (existingIndex >= 0) {
-        this.cart[existingIndex].qty = (this.cart[existingIndex].qty || 0) + addQty;
+        const newQty = (this.cart[existingIndex].qty || 0) + addQty;
+        if (newQty > MAX_QTY_PER_ITEM) {
+          window.UIUtils.showToast(`Límite máximo: ${MAX_QTY_PER_ITEM} unidades por producto`, 'warning');
+          this.cart[existingIndex].qty = MAX_QTY_PER_ITEM;
+        } else {
+          this.cart[existingIndex].qty = newQty;
+        }
       } else {
-        this.cart.push({ ...item, qty: addQty });
+        this.cart.push({ ...item, qty: Math.min(addQty, MAX_QTY_PER_ITEM) });
       }
 
       this.saveCart();
       this.updateUI();
       window.UIUtils.showToast('Producto agregado al carrito ✅', 'success');
+      window.UIUtils.announce(`Producto agregado. Total: ${this.getTotals().totalItems} productos`);
       return true;
     } catch (e) {
       console.error('Error agregando al carrito:', e);
@@ -61,6 +70,7 @@ class CartManager {
       this.saveCart();
       this.updateUI();
       window.UIUtils.showToast('Producto eliminado 🗑️');
+      window.UIUtils.announce(`Producto eliminado. Total: ${this.getTotals().totalItems} productos`);
     }
   }
 
@@ -69,7 +79,7 @@ class CartManager {
     this.saveCart();
     this.updateUI();
     window.UIUtils.showToast('Carrito vaciado 🧹', 'info');
-    window.UIUtils.announce?.('El carrito se vació');
+    window.UIUtils.announce('El carrito se vació completamente');
   }
 
   async clearCartWithConfirmation() {
@@ -263,7 +273,13 @@ class CartManager {
     listEl.innerHTML = '';
 
     if (!this.cart.length) {
-      listEl.innerHTML = '<li class="text-muted">Tu carrito está vacío</li>';
+      listEl.innerHTML = `
+        <li class="text-center text-muted py-4">
+          <i class="bi bi-cart-x" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+          <div>Tu carrito está vacío</div>
+          <small class="text-muted">Agregá productos para comenzar tu pedido</small>
+        </li>
+      `;
       totalItemsEl.textContent = '0';
       if (totalAmountEl) totalAmountEl.textContent = window.ARS.format(0);
       return;

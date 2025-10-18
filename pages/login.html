@@ -227,8 +227,35 @@
       }
     });
 
+    // Precargar datos del formulario si están disponibles
+    function preloadFormData() {
+      const savedEmail = localStorage.getItem('dlab_saved_email');
+      const rememberMe = localStorage.getItem('dlab_remember_me') === 'true';
+      
+      if (savedEmail && rememberMe) {
+        document.getElementById('loginEmail').value = savedEmail;
+        document.getElementById('rememberMe').checked = true;
+      }
+    }
+
+    // Guardar datos del formulario
+    function saveFormData() {
+      const email = document.getElementById('loginEmail').value;
+      const rememberMe = document.getElementById('rememberMe').checked;
+      
+      if (rememberMe && email) {
+        localStorage.setItem('dlab_saved_email', email);
+        localStorage.setItem('dlab_remember_me', 'true');
+      } else {
+        localStorage.removeItem('dlab_saved_email');
+        localStorage.removeItem('dlab_remember_me');
+      }
+    }
+
     // Crear usuarios de demo si no existen
     document.addEventListener('DOMContentLoaded', function() {
+      preloadFormData();
+      
       const users = window.StorageUtils.get(window.SITE_CONFIG.storageKeys.users, []);
       
       // Crear usuario admin si no existe
@@ -265,6 +292,10 @@
 
       window.StorageUtils.set(window.SITE_CONFIG.storageKeys.users, users);
     });
+
+    // Event listener para recordar datos
+    document.getElementById('rememberMe').addEventListener('change', saveFormData);
+    document.getElementById('loginEmail').addEventListener('blur', saveFormData);
   </script>
 </body>
 </html>

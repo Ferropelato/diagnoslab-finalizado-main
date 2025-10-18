@@ -60,7 +60,7 @@ window.StorageUtils = {
 // Utilidades de validación
 window.ValidationUtils = {
   email(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     return re.test(email);
   },
 
@@ -87,7 +87,9 @@ window.UIUtils = {
       if (!r) return;
       // Vaciar y reasignar fuerza a los lectores a releer el texto
       r.textContent = '';
-      r.textContent = String(text ?? '');
+      setTimeout(() => {
+        r.textContent = String(text ?? '');
+      }, 100);
     } catch { /* noop */ }
   },
 
@@ -105,7 +107,7 @@ window.UIUtils = {
           position: 'right' 
         }).showToast();
       } else {
-        console.log('Toast:', text);
+        // Fallback para toast no disponible
       }
     } catch (e) { 
       console.log('Toast:', text); 
@@ -116,7 +118,7 @@ window.UIUtils = {
     if (window.Swal && Swal.fire) {
       return await Swal.fire(options);
     }
-    alert(options?.title ? `${options.title}\n${options.text || ''}` : (options?.text || String(options)));
+    // Fallback para alert no disponible
     return Promise.resolve();
   },
 
@@ -131,7 +133,7 @@ window.UIUtils = {
       });
       return result.isConfirmed;
     }
-    return confirm(text);
+    return window.confirm(text);
   }
 };
 
@@ -248,5 +250,5 @@ document.addEventListener('DOMContentLoaded', () => {
   // Configurar animaciones de entrada
   window.AnimationUtils.setupInViewAnimations();
   
-  console.log(`${window.SITE_CONFIG.name} v${window.SITE_CONFIG.version} — Utilidades cargadas ✔`);
+  // Utilidades cargadas correctamente
 });
