@@ -9,6 +9,10 @@
     "sass": "sass sass/main.scss css/main.css --watch",
     "optimize": "npm run build && npm run sass"
   },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
   "devDependencies": {
     "sass": "^1.93.2"
   },
