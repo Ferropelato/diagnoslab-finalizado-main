@@ -1,12 +1,13 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const CartWidget = ({ itemCount = 0 }) => {
   return (
     <div className="position-relative">
-      <a className="nav-link" href="./pages/carrito.html">
+      <Link className="nav-link" to="/carrito">
         🛒
         {itemCount > 0 && (
-          <span 
+          <span
             className="badge bg-danger position-absolute translate-middle p-1"
             style={{
               top: 0,
@@ -18,7 +19,7 @@ const CartWidget = ({ itemCount = 0 }) => {
             {itemCount > 99 ? '99+' : itemCount}
           </span>
         )}
-      </a>
+      </Link>
     </div>
   );
 };
